@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroTraitLLM</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+	    overflow-y: auto;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+        .chatbox {
+            border: 1px solid #ccc;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            background: #eef2f7;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .settings {
+            margin-top: 20px;
+            padding: 10px;
+            background: #eef2f7;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="text-align: center; color: #333;">MicroTraitLLM</h2>
+        <div class="chatbox" id="chatbox"></div>
+        <input type="text" id="question" placeholder="Ask a question...">
+        <button onclick="sendQuestion()">Submit</button>
+        
+        <div class="settings">
+            <h3>Settings</h3>
+            <label>Number of Articles: <input type="number" id="num_articles" value="8" min="1" max="15"></label><br>
+            <label>Model Type:<select name="model_type" id="model_type" onchange="updateSettings()">
+                    <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+                    <option value="ChatGPT-4o-mini">ChatGPT-4o-mini</option>
+		            <option value="gemma2:2b">gemma2:2b</option>
+		            <option value="gpt-oss:120b">gpt-oss:120b</option>
+                    <option value="llama4:latest">llama4:latest</option>
+                    <option value="gemma:latest">gemma:latest</option>
+		    </select></label><br>
+            <label>Temperature: <input type="number" min="0.0" max="1.8" step="0.1" id="temperature" value="0.0"></label><br>
+            <label>Citation Format: <input type="text" id="citation_format" value="APA"></label><br>
+            <label>Mode:<select name="mode" id="mode" onchange="updateSettings()">
+                    <option value="local">Local</option>
+                    <option value="remote">Remote</option>
+            </select></label><br>
+        </div>
+    </div>
+    
+    <script>
+        function updateSettings() {
+    		let settings = {
+        		num_articles: parseInt(document.getElementById('num_articles').value),
+        		model_type: document.getElementById('model_type').value,
+        		temperature: parseFloat(document.getElementById('temperature').value),
+        		citation_format: document.getElementById('citation_format').value
+    			};
+
+    		fetch('/update_settings', {
+        		method: 'POST',
+        		headers: { 'Content-Type': 'application/json' },
+        		body: JSON.stringify(settings)
+    			})
+    		.then(response => response.json())
+    		.then(data => {
+        		console.log('Settings updated:', data);
+        		// Optionally show a success message in the UI
+    			})
+    		.catch(error => {
+        		console.error('Error updating settings:', error);
+        		// Optionally show an error message in the UI
+    			});
+		}
+        
+        document.querySelectorAll('.settings input').forEach(input => {
+            input.addEventListener('change', updateSettings);
+        });
+        
+        function sendQuestion() {
+            let question = document.getElementById("question").value;
+            if (!question) return;
+            
+            document.getElementById("chatbox").innerHTML += "<p><strong>You:</strong> " + question + "</p>";
+            
+            fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            })
+            .then(response => response.json())
+            .then(data => {
+		    document.getElementById("chatbox").innerHTML += "<p><strong>MTLLM:</strong> " + data.response + "</p>";
+ 		    document.getElementById("chatbox").innerHTML += "<p><strong>MTLLM:</strong> " + data.taxonomy + "</p>";
+		    document.getElementById("chatbox").innerHTML += "<p><strong>MTLLM:</strong> " + data.protein + "</p>";
+		    document.getElementById("chatbox").innerHTML += "<p><strong>MTLLM:</strong> " + data.gene + "</p>";
+	    })
+	    .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
+

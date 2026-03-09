@@ -1,0 +1,4 @@
+API_KEY_OPENAI=Your_api_key_here
+API_KEY_GROQ=Your_api_key_here
+API_KEY_NCBI=Your_api_key_here
+API_KEY_ANVIL=Your_api_key_here
