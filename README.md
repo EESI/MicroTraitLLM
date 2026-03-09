@@ -29,6 +29,7 @@ or
 ```bash
 waitress-serve --host=127.0.0.1 --port=8080 main:app
 ```
+Note: You must use the 'remote' option if not downloading the PubMedCentral Open Access Subset.
 ## License
 
 MIT
