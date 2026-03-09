@@ -9,7 +9,7 @@ Single cell sequencing and metagenomics have generated vast amounts of prokaryot
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/MicroTraitLLM.git
+git clone https://github.com/EESI/MicroTraitLLM.git
 cd MicroTraitLLM
 pip install -r requirements.txt
 ```
